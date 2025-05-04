@@ -1,0 +1,4 @@
+class ApiKey {
+  static const String apiKey =
+      'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1OGM4OTA5ZDMzMGQ2ZjE5NDE3NjcyZjYxODU2NmY0YiIsIm5iZiI6MTc0NjE4MjcwNS40NDYsInN1YiI6IjY4MTRhMjMxZmY3ZTYwYjRmMTBmY2MwNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.JF88zMzlaF_lejMsXqikyZxabWE2ZxYMO4fy3zwlUh4';
+}

@@ -1,12 +1,14 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:tmdbmovies/data/model/contentModel.dart';
-import 'package:tmdbmovies/data/model/trendingListModel.dart';
-import 'package:tmdbmovies/data/service/networkClient.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:tmdbmovies/data/utils/urls.dart';
+import 'package:tmdbmovies/ui/controllers/home_screen_controller.dart';
 import 'package:tmdbmovies/ui/screens/color.dart';
 import 'package:tmdbmovies/ui/tabs/now_Playing_movie_tab.dart';
 import 'package:tmdbmovies/ui/tabs/popular_movies_tab.dart';
+import 'package:tmdbmovies/ui/tabs/trending_movies_tab.dart';
+import 'package:tmdbmovies/ui/tabs/upcoming_movies_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _getTrending();
   }
 
-  List<ContentModel> _trendingList = [];
+  final _homeScreenController = Get.find<HomeScreenController>();
 
   @override
   Widget build(BuildContext context) {
@@ -32,60 +34,135 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.deepBlue,
       body: SafeArea(
         child: DefaultTabController(
-          length: 2,
+          length: 4,
           child: NestedScrollView(
             headerSliverBuilder: (context, bool innerBoxIsScrolled) {
               return <Widget>[
-                SliverAppBar(
-                  backgroundColor: AppColors.deepBlue,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background:
-                        _trendingList.isNotEmpty
-                            ? CarouselSlider.builder(
-                              itemCount: _trendingList.length,
-                              itemBuilder:
-                                  (
-                                    BuildContext context,
-                                    int itemIndex,
-                                    int pageViewIndex,
-                                  ) => Container(
-                                    child: Image.network(
-                                      "${Urls.posterPathBaseUrl}${_trendingList[itemIndex].poster_path}",
-                                      fit: BoxFit.fill,
-                                      width: double.maxFinite,
+                GetBuilder<HomeScreenController>(
+                  builder: (_) {
+                    return SliverAppBar(
+                      backgroundColor: AppColors.deepBlue,
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Trending  🔥",
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          SizedBox(width: 12),
+                          SizedBox(
+                            height: 45,
+                            child: Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: DropdownButton(
+                                value: _homeScreenController.getDropDownValue,
+                                dropdownColor: AppColors.deepBlue,
+                                icon: Icon(
+                                  Icons.arrow_drop_down_rounded,
+                                  color: Colors.amberAccent,
+                                ),
+                                autofocus: true,
+                                items: [
+                                  DropdownMenuItem(
+                                    value: 1,
+                                    child: Text(
+                                      "Daily",
+                                      style: TextStyle(color: Colors.white),
                                     ),
                                   ),
-                              options: CarouselOptions(
-                                autoPlay: true,
-                                viewportFraction: 1,
-                                height: _screenHeight * 0.5,
+                                  DropdownMenuItem(
+                                    value: 2,
+                                    child: Text(
+                                      "Weekly",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (value) {
+                                  _homeScreenController.setDropDownValue = value;
+                                },
                               ),
-                            )
-                            : Center(child: CircularProgressIndicator()),
-                    stretchModes: [StretchMode.zoomBackground],
-                  ),
-                  centerTitle: true,
-                  pinned: true,
-                  floating: false,
-                  stretch: true,
-                  expandedHeight: _screenHeight * 0.5,
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(10),
-                    child: Column(
-                      children: [
-                        SizedBox(height: 0.0),
-                        TabBar(
-                          labelPadding: const EdgeInsets.only(bottom: 10),
-                          tabs: [Text("Now Playing"), Text("Popular Movies")],
-                          dividerColor: AppColors.deepBlue,
-                          indicatorColor: Colors.grey,
-                          labelColor: Colors.white,
-                          labelStyle: TextStyle(fontWeight: FontWeight.w800),
-                          unselectedLabelColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      flexibleSpace: FlexibleSpaceBar(
+                        background:
+                            _homeScreenController.trendingList.isNotEmpty
+                                ? CarouselSlider.builder(
+                                  itemCount:
+                                      _homeScreenController.trendingList.length,
+                                  itemBuilder:
+                                      (
+                                        BuildContext context,
+                                        int itemIndex,
+                                        int pageViewIndex,
+                                      ) => Container(
+                                        child: Image.network(
+                                          "${Urls.posterPathBaseUrl}${_homeScreenController.trendingList[itemIndex].poster_path}",
+                                          fit: BoxFit.fill,
+                                          width: double.maxFinite,
+                                        ),
+                                      ),
+                                  options: CarouselOptions(
+                                    autoPlay: true,
+                                    viewportFraction: 1,
+                                    height: _screenHeight * 0.5,
+                                  ),
+                                )
+                                : Center(child: CircularProgressIndicator()),
+                        stretchModes: [StretchMode.zoomBackground],
+                      ),
+                      centerTitle: true,
+                      pinned: true,
+                      floating: false,
+                      stretch: true,
+                      expandedHeight: _screenHeight * 0.5,
+                      bottom: PreferredSize(
+                        preferredSize: const Size.fromHeight(40),
+                        child: Column(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.deepBlue,
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(12),
+                                  topRight: Radius.circular(12),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.arrow_drop_up_rounded,
+                                    color: Colors.grey,
+                                  ),
+                                  TabBar(
+                                    isScrollable: false,
+                                    labelPadding: const EdgeInsets.only(
+                                      bottom: 10,
+                                    ),
+                                    tabs: [
+                                      Text("Now Playing"),
+                                      Text("Popular"),
+                                      Text("Top Rated"),
+                                      Text("Upcoming"),
+                                    ],
+                                    dividerColor: AppColors.deepBlue,
+                                    indicatorColor: Colors.grey,
+                                    labelColor: Colors.white,
+                                    labelStyle: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                    unselectedLabelColor: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
                 // SliverList(
                 //   delegate: SliverChildListDelegate([
@@ -106,7 +183,13 @@ class _HomeScreenState extends State<HomeScreen> {
             body: Padding(
               padding: const EdgeInsets.all(8.0),
               child: TabBarView(
-                children: [NowPlayingMovieTab(), PopularMoviesTab()],
+                physics: ScrollPhysics(),
+                children: [
+                  NowPlayingMovieTab(),
+                  PopularMoviesTab(),
+                  TrendingMoviesTab(),
+                  UpcomingMoviesTab(),
+                ],
               ),
             ),
           ),
@@ -116,18 +199,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _getTrending() async {
-    NetworkResponse response = await NetworkClient.getRequest(
-      url: Urls.trendingOfDay,
-    );
-    if (response.isSuccess) {
-      TrendingListModel trendingListModel = TrendingListModel.fromJson(
-        response.data ?? {},
-      );
-      setState(() {
-        _trendingList = trendingListModel.trendingList;
-      });
+    final bool isSuccess = await _homeScreenController.getTrending();
+    if (isSuccess) {
+    } else {
+      Get.snackbar("Error", _homeScreenController.getErrorMag);
     }
   }
 }
-
-

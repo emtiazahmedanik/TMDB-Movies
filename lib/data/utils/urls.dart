@@ -6,4 +6,5 @@ class Urls{
   static const String popularMoviesUrl = "https://api.themoviedb.org/3/movie/popular?language=en-US&";
   static const String trendingMoviesUrl = "https://api.themoviedb.org/3/movie/top_rated?language=en-US&";
   static const String upcomingMovies = "https://api.themoviedb.org/3/movie/upcoming?language=en-US&";
+  static const String backdropPathBaseUrl = "https://image.tmdb.org/t/p/original/";
 }

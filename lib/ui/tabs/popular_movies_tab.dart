@@ -1,7 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmdbmovies/data/utils/urls.dart';
-import 'package:tmdbmovies/ui/controllers/now_playing_movies_controller.dart';
 import 'package:tmdbmovies/ui/controllers/popular_movies_controller.dart';
 
 class PopularMoviesTab extends StatefulWidget {
@@ -14,17 +14,11 @@ class PopularMoviesTab extends StatefulWidget {
 class _PopularMoviesTabState extends State<PopularMoviesTab>
     with AutomaticKeepAliveClientMixin {
   final _popularMoviesController = Get.find<PopularMoviesController>();
-  final _gridController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _getTrendingMovies();
-    _gridController.addListener((){
-      if(_gridController.position.maxScrollExtent == _gridController.offset){
-        _popularMoviesController.getNewPopularMovies();
-      }
-    });
   }
 
   @override
@@ -36,7 +30,6 @@ class _PopularMoviesTabState extends State<PopularMoviesTab>
           visible: _popularMoviesController.getIsLoading == false,
           replacement: Center(child: const CircularProgressIndicator()),
           child:GridView.builder(
-            controller: _gridController,
             itemCount: _popularMoviesController.getTrendingList.length + 1,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisSpacing: 10,
@@ -49,19 +42,61 @@ class _PopularMoviesTabState extends State<PopularMoviesTab>
                 return Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(
-                        "${Urls.posterPathBaseUrl}${_popularMoviesController
-                            .getTrendingList[index].poster_path}",
-                      ),
+                      image: CachedNetworkImageProvider("${Urls.posterPathBaseUrl}${_popularMoviesController.getTrendingList[index].poster_path}"),
+                      // NetworkImage(
+                      //   "${Urls.posterPathBaseUrl}${_popularMoviesController
+                      //       .getTrendingList[index].poster_path}",
+                      // ),
                       fit: BoxFit.fill,
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  child:Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(_popularMoviesController.getTrendingList[index].release_date,style: TextStyle(color: Colors.amberAccent,fontSize: 10,fontWeight: FontWeight.w500),),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(5)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                              child: Text(
+                                "⭐ " +
+                                    _popularMoviesController
+                                        .getTrendingList[index]
+                                        .vote_avg
+                                        .toString(),
+                                style: TextStyle(
+                                  color: Colors.amberAccent,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               } else {
-                return Padding(
+                return  Padding(
                   padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: const Center(child: CircularProgressIndicator(),),
+                  child: Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        _popularMoviesController.getNewPopularMovies();
+                      },
+                      label: Icon(Icons.refresh),
+                    ),
+                  ),
                 );
               }
             },

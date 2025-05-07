@@ -4,12 +4,14 @@ class ContentModel {
   final String original_title;
   final String overview;
   final String poster_path;
+  final String backdrop_path;
   final String media_type;
   final bool adult;
   final String original_language;
   final String release_date;
   final bool video;
   final int vote_count;
+  final int vote_avg;
 
   ContentModel({
     required this.id,
@@ -17,12 +19,14 @@ class ContentModel {
     required this.original_title,
     required this.overview,
     required this.poster_path,
+    required this.backdrop_path,
     required this.media_type,
     required this.adult,
     required this.original_language,
     required this.release_date,
     required this.video,
     required this.vote_count,
+    required this.vote_avg
   });
 
   factory ContentModel.fromJson(Map<String, dynamic> jsonData){
@@ -32,12 +36,14 @@ class ContentModel {
         original_title: jsonData["original_title"] ?? '',
         overview: jsonData["overview"] ?? '',
         poster_path: jsonData["poster_path"] ?? '',
+        backdrop_path: jsonData["backdrop_path"] ?? '',
         media_type: jsonData["media_type"] ?? '',
         adult: jsonData["adult"] ?? false,
         original_language: jsonData["original_language"] ?? '',
         release_date: jsonData["release_date"] ?? '',
         video: jsonData["video"] ?? false,
-        vote_count: jsonData["vote_count"] ?? 0
+        vote_count: jsonData["vote_count"] ?? 0,
+        vote_avg: jsonData["vote_average"].toInt() ?? 0
     );
   }
 }

@@ -5,11 +5,14 @@ import 'package:tmdbmovies/data/service/networkClient.dart';
 import 'package:tmdbmovies/data/utils/urls.dart';
 
 class HomeScreenController extends GetxController{
-  List<ContentModel> trendingList = [];
+
+  List<ContentModel> _trendingList = [];
+
+  List get getTrendingList => _trendingList;
   int? _dropDownValue = 1;
   get getDropDownValue => _dropDownValue;
   set setDropDownValue(value) {
-    trendingList.clear();
+    _trendingList.clear();
     _dropDownValue = value;
     update();
     callGetTrending();
@@ -35,7 +38,7 @@ class HomeScreenController extends GetxController{
       TrendingListModel trendingListModel = TrendingListModel.fromJson(
         response.data ?? {},
       );
-      trendingList = trendingListModel.trendingList;
+      _trendingList = trendingListModel.trendingList;
       isSuccess = true;
       _errorMsg = null;
     }else{

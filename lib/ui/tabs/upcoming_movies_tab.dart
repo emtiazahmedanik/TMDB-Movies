@@ -1,8 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmdbmovies/data/utils/urls.dart';
-import 'package:tmdbmovies/ui/controllers/popular_movies_controller.dart';
-import 'package:tmdbmovies/ui/controllers/trending_movies_controller.dart';
 import 'package:tmdbmovies/ui/controllers/upcoming_movies_controller.dart';
 
 class UpcomingMoviesTab extends StatefulWidget {
@@ -15,17 +14,11 @@ class UpcomingMoviesTab extends StatefulWidget {
 class _UpcomingMoviesTabState extends State<UpcomingMoviesTab>
     with AutomaticKeepAliveClientMixin {
   final _upcomingMoviesController = Get.find<UpcomingMoviesController>();
-  final _gridController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _getTrendingMovies();
-    _gridController.addListener((){
-      if(_gridController.position.maxScrollExtent == _gridController.offset){
-        _upcomingMoviesController.getNewUpcomingMovies();
-      }
-    });
   }
 
   @override
@@ -36,8 +29,7 @@ class _UpcomingMoviesTabState extends State<UpcomingMoviesTab>
         return Visibility(
           visible: _upcomingMoviesController.getIsLoading == false,
           replacement: Center(child: const CircularProgressIndicator()),
-          child:GridView.builder(
-            controller: _gridController,
+          child: GridView.builder(
             itemCount: _upcomingMoviesController.getTrendingList.length + 1,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisSpacing: 10,
@@ -50,24 +42,78 @@ class _UpcomingMoviesTabState extends State<UpcomingMoviesTab>
                 return Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(
-                        "${Urls.posterPathBaseUrl}${_upcomingMoviesController
-                            .getTrendingList[index].poster_path}",
+                      image: CachedNetworkImageProvider(
+                        "${Urls.posterPathBaseUrl}${_upcomingMoviesController.getTrendingList[index].poster_path}",
                       ),
+                      // NetworkImage(
+                      //   "${Urls.posterPathBaseUrl}${_upcomingMoviesController
+                      //       .getTrendingList[index].poster_path}",
+                      // ),
                       fit: BoxFit.fill,
                     ),
                     borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                        vertical: 5,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _upcomingMoviesController
+                                .getTrendingList[index]
+                                .release_date,
+                            style: TextStyle(
+                              color: Colors.amberAccent,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black26,
+                              borderRadius: BorderRadius.circular(5)
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                              child: Text(
+                                "⭐ " +
+                                    _upcomingMoviesController
+                                        .getTrendingList[index]
+                                        .vote_avg
+                                        .toString(),
+                                style: TextStyle(
+                                  color: Colors.amberAccent,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               } else {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 32),
-                  child: const Center(child: CircularProgressIndicator(),),
+                  child: Center(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        _upcomingMoviesController.getNewUpcomingMovies();
+                      },
+                      label: Icon(Icons.refresh),
+                    ),
+                  ),
                 );
               }
             },
-          )
-          ,
+          ),
         );
       },
     );
@@ -75,7 +121,8 @@ class _UpcomingMoviesTabState extends State<UpcomingMoviesTab>
 
   Future<void> _getTrendingMovies() async {
     final bool isSuccess = await _upcomingMoviesController.getUpcomingMovies();
-    if (isSuccess) {} else {
+    if (isSuccess) {
+    } else {
       Get.snackbar(
         "Error",
         _upcomingMoviesController.getErrorMag,
@@ -88,7 +135,5 @@ class _UpcomingMoviesTabState extends State<UpcomingMoviesTab>
 
   @override
   // TODO: implement wantKeepAlive
-  bool get wantKeepAlive =>
-      true;
+  bool get wantKeepAlive => true;
 }
-

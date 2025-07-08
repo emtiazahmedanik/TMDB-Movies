@@ -28,6 +28,11 @@ NestedScrollView & SliverAppBar for smooth scroll-based interactions
 This project is ideal for learning and showcasing how to build a scalable and interactive Flutter app using best practices for network requests, pagination, and modern UI components.
 ## Getting Started
 
+
+
+https://github.com/user-attachments/assets/0d181801-2e7c-4422-8b1c-9cdcbfac3e31
+
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
